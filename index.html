@@ -92,6 +92,58 @@
       color: #2d3436;
       transition: opacity 0.3s ease;
     }
+
+    /* Стили аудиоплеера */
+    .audio-section {
+      background: #fff0f3;
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ffccd5;
+    }
+    .current-track {
+      font-size: 12px;
+      font-weight: bold;
+      color: #ff6b81;
+      margin-bottom: 8px;
+    }
+    audio {
+      width: 100%;
+      height: 36px;
+      margin-bottom: 8px;
+    }
+    .playlist {
+      list-style: none;
+      max-height: 140px;
+      overflow-y: auto;
+      text-align: left;
+    }
+    .playlist li {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      background: #ffffff;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .playlist li:hover {
+      background: #ffe0e6;
+    }
+    .playlist li.active {
+      background: #ff6b81;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    .playlist::-webkit-scrollbar {
+      width: 4px;
+    }
+    .playlist::-webkit-scrollbar-thumb {
+      background: #ffb3c1;
+      border-radius: 2px;
+    }
+
     .btn-group {
       display: flex;
       flex-direction: column;
@@ -141,6 +193,24 @@
 
     <div class="phrase-box">
       <p class="phrase" id="phraseText">Нажми на кнопку ниже, когда тебе понадобится поддержка 💖</p>
+    </div>
+
+    <!-- Аудиоплеер на 7 треков -->
+    <div class="audio-section">
+      <div class="current-track" id="currentTrackName">🎵 Нажмите на трек для воспроизведения</div>
+      <audio id="audioPlayer" controls preload="auto">
+        <source id="audioSource" src="" type="audio/mpeg">
+        Ваш браузер не поддерживает аудио.
+      </audio>
+      <ul class="playlist" id="playlist">
+        <li data-src="song1.m4a" class="active">🎧 Juicy J Smoke A Nigga (Feat Wiz Khalifa)</li>
+        <li data-src="song2.mp3">🎧 Хаски  Пироман 17</li>
+        <li data-src="song3.m4a">🎧 Scally Milano Дай Мне Шанс</li>
+        <li data-src="song4.m4a">🎧 Scally_Milano_feat_uglystephan_Я_хочу_тебя_трахать</li>
+        <li data-src="song5.m4a">🎧 Yung Trappa  Неважно Что</li>
+        <li data-src="song6.m4a">🎧 zhanulka ток</li>
+        <li data-src="song7.m4a">🎧 Платина Ещё один</li>
+      </ul>
     </div>
 
     <div class="btn-group">
@@ -235,6 +305,52 @@
       const message = encodeURIComponent("Привет! Я запустила сигнальную ракету 🚀 Мне срочно нужно немного твоего внимания и тепла 💖");
       window.open(`https://t.me/${telegramUsername}?text=${message}`, '_blank');
     }
+
+    // Логика плеера
+    const player = document.getElementById('audioPlayer');
+    const source = document.getElementById('audioSource');
+    const playlistItems = document.querySelectorAll('#playlist li');
+    const currentTrackName = document.getElementById('currentTrackName');
+
+    let currentTrackIndex = 0;
+
+    function loadTrack(index) {
+      playlistItems.forEach(item => item.classList.remove('active'));
+      const activeItem = playlistItems[index];
+      activeItem.classList.add('active');
+
+      const fileName = activeItem.getAttribute('data-src');
+      const trackName = activeItem.textContent;
+
+      source.src = fileName;
+      currentTrackName.textContent = `🎵 ${trackName}`;
+      player.load();
+    }
+
+    function playCurrentTrack() {
+      const promise = player.play();
+      if (promise !== undefined) {
+        promise.catch(err => {
+          console.log("Ожидание действия пользователя:", err);
+        });
+      }
+    }
+
+    loadTrack(currentTrackIndex);
+
+    playlistItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        currentTrackIndex = index;
+        loadTrack(currentTrackIndex);
+        playCurrentTrack();
+      });
+    });
+
+    player.addEventListener('ended', () => {
+      currentTrackIndex = (currentTrackIndex + 1) % playlistItems.length;
+      loadTrack(currentTrackIndex);
+      playCurrentTrack();
+    });
   </script>
 </body>
 </html>
