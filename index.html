@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Для Камиллы 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Comfortaa', cursive, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #4a4a4a;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-radius: 28px;
+      padding: 25px 20px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(255, 107, 129, 0.2);
+      border: 2px solid #ffffff;
+    }
+    .photo-frame {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #ff6b81;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      background: #ffeaa7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff6b81;
+      font-weight: bold;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+    h1 {
+      font-size: 22px;
+      color: #ff6b81;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 15px;
+    }
+    .counter-badge {
+      display: inline-block;
+      background: #ffeaa7;
+      color: #d63031;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+    .phrase-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+      border: 1px solid #ffeaa7;
+    }
+    .phrase {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #2d3436;
+      transition: opacity 0.3s ease;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn {
+      background: #ff6b81;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: bold;
+      border-radius: 50px;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 107, 129, 0.3);
+      transition: transform 0.1s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-secondary {
+      background: #a29bfe;
+      box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);
+    }
+    .btn-alert {
+      background: #ff7675;
+      box-shadow: 0 4px 15px rgba(255, 118, 117, 0.4);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="photo-frame">
+      <img id="userPhoto" src="IMG_4479.jpg" alt="Фото Камиллы" onerror="handlePhotoError(this)">
+    </div>
+
+    <h1>Камилла, улыбнись! ✨</h1>
+    <p class="subtitle">Твой личный уголок тепла</p>
+
+    <div class="counter-badge">
+      Обнимашек получено: <span id="hugCount">0</span> 🫂
+    </div>
+
+    <div class="phrase-box">
+      <p class="phrase" id="phraseText">Нажми на кнопку ниже, когда тебе понадобится поддержка 💖</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn" onclick="getSupport()">Мне нужна поддержка 💌</button>
+      <button class="btn btn-secondary" onclick="sendHug()">Получить обнимашку 🫂</button>
+      <button class="btn btn-alert" onclick="sendSignal()">🚀 Запустить сигнальную ракету</button>
+    </div>
+  </div>
+
+  <script>
+    const telegramUsername = "bibubopp";
+
+    const photos = [
+      "IMG_4479", "IMG_4480", "IMG_4481", 
+      "IMG_4482", "IMG_4483", "IMG_4484", 
+      "IMG_4485", "IMG_4486"
+    ];
+
+    const phrases = [
+      "Камилла, ты справляешься лучше, чем тебе кажется! Я горжусь тобой 🌟",
+      "Сделай паузу, выдохни. Всё обязательно наладится, я рядом 🤍",
+      "Камилла, ты самая умная, красивая и невероятная. Не забывай об этом!",
+      "Помни, что твой комфорт и спокойствие — на первом месте ☕",
+      "Даже когда тебе тяжело, ты остаёшься самым светлым человеком ☀️",
+      "Виртуальная обнимашка доставлена! Камилла, всё будет хорошо 🫂"
+    ];
+
+    let hugs = parseInt(localStorage.getItem('kamilla_hugs')) || 0;
+    document.getElementById('hugCount').innerText = hugs;
+
+    function handlePhotoError(img) {
+      if (img.src.endsWith('.jpg')) {
+        img.src = img.src.replace('.jpg', '.jpeg');
+      } else if (img.src.endsWith('.jpeg')) {
+        img.src = img.src.replace('.jpeg', '.jpg.jpg');
+      } else {
+        img.style.display = 'none';
+        img.parentElement.innerText = 'Камилла ✨';
+      }
+    }
+
+    function getSupport() {
+      const phraseElement = document.getElementById('phraseText');
+      const photoElement = document.getElementById('userPhoto');
+
+      phraseElement.style.opacity = 0;
+      photoElement.style.opacity = 0;
+
+      setTimeout(() => {
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        const randomPhotoBase = photos[Math.floor(Math.random() * photos.length)];
+
+        phraseElement.innerText = randomPhrase;
+        
+        photoElement.style.display = 'block';
+        photoElement.src = `${randomPhotoBase}.jpg`;
+
+        phraseElement.style.opacity = 1;
+        photoElement.style.opacity = 1;
+      }, 300);
+
+      confetti({
+        particleCount: 25,
+        spread: 60,
+        origin: { y: 0.7 },
+        colors: ['#ff6b81', '#ff9ff3']
+      });
+    }
+
+    function sendHug() {
+      hugs++;
+      localStorage.setItem('kamilla_hugs', hugs);
+      document.getElementById('hugCount').innerText = hugs;
+
+      const phraseElement = document.getElementById('phraseText');
+      phraseElement.style.opacity = 0;
+
+      setTimeout(() => {
+        phraseElement.innerText = `Крепкая виртуальная обнимашка доставлена! Это была ${hugs}-я обнимашка 🫂❤️`;
+        phraseElement.style.opacity = 1;
+      }, 300);
+
+      confetti({
+        particleCount: 50,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#ff6b81', '#a29bfe', '#fd79a8']
+      });
+    }
+
+    function sendSignal() {
+      const message = encodeURIComponent("Привет! Я запустила сигнальную ракету 🚀 Мне срочно нужно немного твоего внимания и тепла 💖");
+      window.open(`https://t.me/${telegramUsername}?text=${message}`, '_blank');
+    }
+  </script>
+</body>
+</html>
